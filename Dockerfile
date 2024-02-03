@@ -1,30 +1,25 @@
-FROM ubuntu:latest
-ENV USER root
-ENV DEBIAN_FRONTEND=noninteractive
-ENV DISPLAY ":1"
-ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
-RUN apt-get update -qq && apt-get install -f -y \
-    software-properties-common \
-    net-tools \
-    nano \
-    curl \
-    wget \
-    grep \
-    xvfb \
-    xterm \
-    i3-wm \
-    x11-xserver-utils
-RUN wget -O midori.deb http://midori-browser.org/downloads/midori_0.5.11-0_amd64_.deb && \
-    dpkg --unpack midori.deb && \
-    apt-get install -f -y && \
-    rm -rf midori.deb && \
-    mkdir /main
-RUN wget -q -O /tmp/tigervnc-1.7.0.x86_64.tar.gz https://bintray.com/tigervnc/stable/download_file?file_path=tigervnc-1.7.0.x86_64.tar.gz && \
-    cd /tmp && tar -xf tigervnc-1.7.0.x86_64.tar.gz && cp -R tigervnc-1.7.0.x86_64/* /
-RUN echo "password\npassword\nn\n" | vncpasswd
-RUN touch /root/.Xresources
-ADD xstartup.sh /root/.vnc/xstartup
-ADD config.sh /root/.i3/config
-ADD script.sh /script.sh
-WORKDIR /main
-ENTRYPOINT ["/script.sh"]
+# Use a lightweight Linux distribution as the base image
+FROM debian:bullseye-slim
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y midori novnc websockify && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Expose the VNC port
+EXPOSE 6080
+
+# Set up noVNC
+WORKDIR /root
+RUN git clone https://github.com/novnc/noVNC.git && \
+    git clone https://github.com/novnc/websockify.git
+
+# Create a script to start Midori with noVNC
+RUN echo '#!/bin/bash' > /root/start.sh && \
+    echo 'midori &' >> /root/start.sh && \
+    echo 'websockify -D --web=/root/noVNC 6080 localhost:5900' >> /root/start.sh && \
+    chmod +x /root/start.sh
+
+# Set the default command to start the script
+CMD ["/root/start.sh"]
