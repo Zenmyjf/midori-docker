@@ -1,5 +1,6 @@
 FROM ubuntu:bionic
 ENV USER root
+ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY ":1"
 ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 RUN apt-get update -qq && apt-get install -f -y \
