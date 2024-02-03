@@ -1,9 +1,9 @@
 # Use a lightweight Linux distribution as the base image
 FROM debian:bullseye-slim
 
-# Install necessary packages
+# Install necessary packages, including git
 RUN apt-get update && \
-    apt-get install -y midori novnc websockify && \
+    apt-get install -y midori novnc websockify git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
