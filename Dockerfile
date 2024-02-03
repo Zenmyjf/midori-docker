@@ -1,4 +1,4 @@
-FROM ubuntu:bionic
+FROM ubuntu:latest
 ENV USER root
 ENV DEBIAN_FRONTEND=noninteractive
 ENV DISPLAY ":1"
