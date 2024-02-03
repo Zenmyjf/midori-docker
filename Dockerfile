@@ -3,7 +3,7 @@ FROM debian:bullseye-slim
 
 # Install necessary packages, including Midori
 RUN apt-get update && \
-    apt-get install -y midori novnc websockify xvfb && \
+    apt-get install -y midori novnc websockify git xvfb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
